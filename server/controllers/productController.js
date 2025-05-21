@@ -1,4 +1,5 @@
 const Product = require("../models/Product");
+const Brand = require("../models/Brand");
 
 const createProduct = async (req, res) => {
   try {
@@ -38,6 +39,8 @@ const createProduct = async (req, res) => {
       return res.status(400).json({ message: "Product Already Exists" });
     }
 
+    const brandObj = await Brand.findOne({ _id: brand });
+
     const productObj = {
       image,
       title,
@@ -57,6 +60,10 @@ const createProduct = async (req, res) => {
     await product.save();
 
     if (product) {
+      brand.products.push(product._id);
+
+      await brand.save();
+
       res.status(200).json({ message: "PRODUCT ADDED" });
     }
   } catch (error) {
